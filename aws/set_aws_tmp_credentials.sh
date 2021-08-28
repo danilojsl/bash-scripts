@@ -36,18 +36,16 @@ unset AWS_ACCESS_KEY_ID
 unset AWS_SECRET_ACCESS_KEY
 unset AWS_SESSION_TOKEN
 
-aws sts get-session-token --serial-number $MFA_DEVICE_ID --duration-seconds $DURATION --token-code $TOKEN |
-    jq -r \
-        --arg aki "aws configure set aws_access_key_id" \
-        --arg asak "aws configure set aws_secret_access_key" \
-        --arg ast "aws configure set aws_session_token" \
-    '.Credentials|($aki + " " + .AccessKeyId),($asak + " " + .SecretAccessKey),($ast + " " + .SessionToken)'
+credentials=($(aws sts get-session-token --serial-number $MFA_DEVICE_ID --duration-seconds $DURATION --token-code $TOKEN |
+jq -r '.Credentials|.AccessKeyId,.SecretAccessKey,.SessionToken'))
 
-# TODO: Create variables to reference on export
-echo "AWS_ACCESS_KEY_ID=$aki"
-export AWS_ACCESS_KEY_ID=$aki
-export AWS_SECRET_ACCESS_KEY=$asak
-export AWS_SESSION_TOKEN=$ast
+AWS_ACCESS_KEY_ID=${credentials[0]}
+AWS_SECRET_ACCESS_KEY=${credentials[1]}
+AWS_SESSION_TOKEN=${credentials[2]}
+
+export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
 
 DURATION_IN_MINUTES=$(awk "BEGIN {print $DURATION / 60}")
 echo "Credentials remain valid for $DURATION_IN_MINUTES minutes"
