@@ -38,14 +38,10 @@ unset AWS_SESSION_TOKEN
 
 aws sts get-session-token --serial-number $MFA_DEVICE_ID --duration-seconds $DURATION --token-code $TOKEN |
     jq -r \
-        --arg aki "AWS_ACCESS_KEY_ID=" \
-        --arg asak "AWS_ACCESS_KEY_ID=" \
-        --arg ast "AWS_SESSION_TOKEN=" \
+        --arg aki "AWS_ACCESS_KEY_ID:" \
+        --arg asak "AWS_ACCESS_KEY_ID:" \
+        --arg ast "AWS_SESSION_TOKEN:" \
     '.Credentials|($aki + " " + .AccessKeyId),($asak + " " + .SecretAccessKey),($ast + " " + .SessionToken)'
-
-echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
-echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
-echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN"
 
 DURATION_IN_MINUTES=$(awk "BEGIN {print $DURATION / 60}")
 echo "Credentials remain valid for $DURATION_IN_MINUTES minutes"
