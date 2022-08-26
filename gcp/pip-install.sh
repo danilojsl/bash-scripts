@@ -45,7 +45,7 @@ function main() {
 
   install_pip
   run_with_retry pip install --upgrade ${PACKAGES}
-  run_with_retry pip install -i https://test.pypi.org/simple/ spark-nlp==4.1.0rc8
+  run_with_retry pip install -i https://test.pypi.org/simple/ spark-nlp==4.1.0rc13
 }
 
 main
